@@ -2,7 +2,7 @@
 
 import httpx
 import pytest
-from sokhan_bot.client import BackendError, FileTooLongError, QuotaError, SokhanClient
+from sokhan_bot.client import AuthError, BackendError, FileTooLongError, QuotaError, SokhanClient
 from sokhan_bot.config import BotSettings
 
 
@@ -106,3 +106,20 @@ def test_register_telegram_sends_the_bot_secret():
     with SokhanClient(settings, transport=httpx.MockTransport(handler)) as client:
         assert client.register_telegram(42, None) == "tok"
     assert seen["secret"] == "shared"
+
+
+@pytest.mark.parametrize(
+    "call",
+    [
+        lambda client: client.upload_audio("tok", "voice.ogg", b"bytes"),
+        lambda client: client.get_job("tok", "job-1"),
+        lambda client: client.get_quota("tok"),
+    ],
+)
+def test_revoked_token_raises_auth_error(call):
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(401, json={"detail": "invalid token"})
+
+    with _client(handler) as client:
+        with pytest.raises(AuthError):
+            call(client)

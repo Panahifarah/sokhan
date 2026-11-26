@@ -97,6 +97,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/) and the proje
 
 - `CONTRIBUTING.fa.md`: a Persian translation of the contribution guide,
   with a language switcher in both files like the READMEs (#31).
+- `POST /auth/logout` revokes the caller's token (204). An account has a
+  single active token, so it signs out every client holding it.
+
+- The dashboard header shows the sign-in state: a **Sign in** button when
+  signed out, the account email and **Sign out** when signed in. Sign out
+  revokes the token on the server and works even when the API is
+  unreachable. The landing page's sign-in button is hidden and the login
+  page redirects to the upload page for a signed-in user.
 
 ### Changed
 
@@ -134,6 +142,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/) and the proje
   kept as is; a comma in a list of numbers (`4090,4080`) still becomes `،`.
   The edge cases from #30 (slash dates, Latin digits in Persian sentences,
   abbreviations, ellipses, repeated marks) are pinned by tests.
+- The Telegram bot recovers when the API revokes the token it cached for a
+  chat (a newer sign-in or a logout of the same account). Every request
+  used to fail from then on; the bot now drops the token, re-registers
+  once and retries, and `/start` only shows a connect code that works.
 
 ## [1.4.1] - 2026-11-26
 
