@@ -176,6 +176,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/) and the proje
   bar at 0%, and the job page shows the percentage with the right sign in
   English.
 
+### Removed
+
+- The landing page's separate sign-in button; signing in lives in
+  the header, and "Get started" sends signed-out visitors to the login
+  page.
+
 ## [1.4.1] - 2026-11-26
 
 ### Security
